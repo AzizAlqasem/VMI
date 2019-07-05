@@ -156,7 +156,7 @@ class VMI:
             theta_grid (2D np.array) – meshgrid of theta coordinates
             
         Notes
-        Adapted from: http://stackoverflow.com/questions/3798333/image-information-along-a-polar-coordinate-system
+        source: (https://pyabel.readthedocs.io/en/latest/abel.html#image-processing-tools)
         """
         
         self.data, self.r_grid, self.theta_grid = abel.tools.polar.reproject_image_into_polar(self.data, origin=origin, Jacobian=Jacobian, dr=dr, dt=dt)
@@ -175,6 +175,8 @@ class VMI:
     def get_image_quadrants(self, reorient=True, symmetry_axis=None, use_quadrants=(True, True, True, True), symmetrize_method=u'average'):
         
         """
+        source: (https://pyabel.readthedocs.io/en/latest/abel.html#image-processing-tools)
+        
         Given an image (m,n) return its 4 quadrants Q0, Q1, Q2, Q3 as defined below.
         
         Parameters:
@@ -230,6 +232,7 @@ class VMI:
     def put_image_quadrants(self, Q, symmetry_axis=None ):
         
         """
+        source: (https://pyabel.readthedocs.io/en/latest/abel.html#image-processing-tools)
         Reassemble image from 4 quadrants Q = (Q0, Q1, Q2, Q3) The reverse process to get_image_quadrants(reorient=True)
         Note: the quadrants should all be oriented as Q0, the upper right quadrant
         
@@ -355,6 +358,5 @@ class VMI:
 """
 d = np.load('data.npy')
 v = VMI(d)
-#v.darkspot_filter()
 """
 
