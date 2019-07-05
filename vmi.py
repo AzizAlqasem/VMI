@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
 from skimage import restoration
-import abel
+import abel.tools, abel.transform
 import cv2         #OpenCV
 #local import
 import tools
@@ -348,6 +348,38 @@ class VMI:
     def abel_transform(self,):
         
         self.data = abel.transform.Transform(self.data, method='basex', direction='inverse').transform
+        
+        
+    def get_velocities(self, d_theta = 15, dp = 2):
+        
+        self.thetas = range(0, 46 , d_theta) # 45 + 1 because the rotation is semitric and we take two axis (x, y)
+        if 45 in self.thetas: # at angel 45 degrees (st_h = st_v) therefore we want avoide the duplicate 
+            shape = (self.rx + 1, len(self.thetas)*2 - 1)
+        else:
+            shape = (self.rx + 1, len(self.thetas)*2)
+        self.lines = np.zeros(shape = shape, dtype = np.float32)      ##what if rx != ry ??
+        for i,theta in enumerate(self.thetas):
+            data_rot = ndimage.rotate(self.data, theta, reshape = False)
+            
+            st_h = data_rot[self.cy - int(dp/2): self.cy + 1 + int(dp/2), self.cx : ]
+            st_v = data_rot[self.cy : , self.cx - int(dp/2): self.cx + 1 + int(dp/2)]
+        
+            h = np.sum(st_h, axis = 0)
+            v = np.sum(st_v, axis = 1)
+            
+            self.lines[:,i] = h
+            self.lines[:, -1 - i] = v
+    
+    
+    def plot_velocities(self,):
+        plots = plt.plot(self.lines)
+        plt.legend(plots, range(0,91, self.thetas.step))
+        plt.show()
+            
+        
+        
+        
+        
         
     
     def __repr__(self):
