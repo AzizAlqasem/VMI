@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy import ndimage
-from skimage import restoration
-import abel.tools, abel.transform
-import cv2         #OpenCV
+from skimage import restoration      #scikit-image
+import abel.tools, abel.transform    #PyAbel
+import cv2                           #OpenCV
 #local import
 import tools
 
