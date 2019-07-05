@@ -18,6 +18,7 @@ class VMI:
             self.data = data.astype(np.float32)
         else:
             self.data = data
+        self.put_copy()                   #to store a copy in case something went wrong! 
         self.shape = data.shape
 
         if radious:
@@ -329,22 +330,6 @@ class VMI:
         self.data[mask] = data_focus[mask]
         
     
-    
-    def show(self, colorbar=False, **kw):
-        """
-        To show the image
-        in kw:
-            vmin: min value in the gray scale
-            vmax: max value in teh gray scale
-            alpha: The alpha blending value, between 0 (transparent) and 1 (opaque).
-        """
-
-        plt.imshow(self.data, cmap='gray', **kw)
-        if colorbar:
-            plt.colorbar()
-        #plt.show()
-        
-    
     def abel_transform(self,):
         
         self.data = abel.transform.Transform(self.data, method='basex', direction='inverse').transform
@@ -376,9 +361,27 @@ class VMI:
         plt.legend(plots, range(0,91, self.thetas.step))
         plt.show()
             
+    # To have copy of the data - in case the user need to go one step back!
+    def put_copy(self):
+        self.cdata = self.data.copy()
+    
+    def get_copy(self):
+        self.data = self.cdata.copy()
         
         
-        
+    def show(self, colorbar=False, **kw):
+        """
+        To show the image
+        in kw:
+            vmin: min value in the gray scale
+            vmax: max value in teh gray scale
+            alpha: The alpha blending value, between 0 (transparent) and 1 (opaque).
+        """
+
+        plt.imshow(self.data, cmap='gray', **kw)
+        if colorbar:
+            plt.colorbar()
+        #plt.show()
         
         
     
