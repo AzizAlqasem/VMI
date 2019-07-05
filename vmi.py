@@ -335,8 +335,14 @@ class VMI:
         self.data = abel.transform.Transform(self.data, method='basex', direction='inverse').transform
         
         
-    def get_velocities(self, d_theta = 15, dp = 2):
-        
+    def get_velocities(self, d_theta:int = 15, dp:int = 2):
+        """
+        Find the electrom velocities from the VMI trasformed image at different angles
+        parameters:
+            d_theta: int - Delta Theta
+                eg., if d_theta = 15 --> [0, 15, 30, ..., 90]
+            dp: int - The width in pixels along the velocity axis
+        """
         self.thetas = range(0, 46 , d_theta) # 45 + 1 because the rotation is semitric and we take two axis (x, y)
         if 45 in self.thetas: # at angel 45 degrees (st_h = st_v) therefore we want avoide the duplicate 
             shape = (self.rx + 1, len(self.thetas)*2 - 1)
@@ -357,9 +363,16 @@ class VMI:
     
     
     def plot_velocities(self,):
-        plots = plt.plot(self.lines)
-        plt.legend(plots, range(0,91, self.thetas.step))
-        plt.show()
+        #Make sure self.lines exist
+        try:
+            self.lines
+        except:
+            self.get_velocities()
+            
+        plt.cla()
+        self.plots = plt.plot(self.lines)
+        plt.legend(self.plots, range(0,91, self.thetas.step))
+
             
     # To have copy of the data - in case the user need to go one step back!
     def put_copy(self):
@@ -377,7 +390,7 @@ class VMI:
             vmax: max value in teh gray scale
             alpha: The alpha blending value, between 0 (transparent) and 1 (opaque).
         """
-
+        plt.cla()
         plt.imshow(self.data, cmap='gray', **kw)
         if colorbar:
             plt.colorbar()
