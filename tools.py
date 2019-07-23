@@ -3,6 +3,7 @@ Created on Sun Jun 23 13:54:13 2019
 """
 import numpy as np
 
+__version__ = '0.1.0'
 
 
 def creat_mask(size:list, center: list, radious: int or list , place_true:str = 'inside', \
@@ -59,6 +60,5 @@ def creat_mask(size:list, center: list, radious: int or list , place_true:str = 
         return mask
     else:
         raise(NameError('output_valuse = {} is not an option! Please choose form ["bool" or "true/false" , 1/0]'.format(output_values)))
-        
-        
+    
     
