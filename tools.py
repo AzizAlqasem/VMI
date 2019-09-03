@@ -61,4 +61,6 @@ def creat_mask(size:list, center: list, radious: int or list , place_true:str = 
     else:
         raise(NameError('output_valuse = {} is not an option! Please choose form ["bool" or "true/false" , 1/0]'.format(output_values)))
     
-    
+
+def _gaussian(x, a, b, c, d):
+    return a * np.exp(-(x-b)**2/c) + d

@@ -1,5 +1,6 @@
 """
-Present VMI Data and Results
+#Visulization
+Present VMI Data and Results 
 """
 
 import numpy as np

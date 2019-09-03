@@ -6,10 +6,12 @@ from scipy import ndimage
 from skimage import restoration      #scikit-image
 import abel.tools, abel.transform    #PyAbel
 import cv2                           #OpenCV
+from scipy.optimize import curve_fit
+import matplotlib.pyplot as plt
 #local import
 import tools
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 class Filter:
@@ -115,7 +117,11 @@ class Tools:
                                             symmetrize_method=symmetrize_method)
         
         
-        
+    
+    def choose_max_value(self,):
+        self.quadrant_max_values = np.maximum.reduce(self.quadrants) 
+    
+    
     def put_image_quadrants(self, Q, symmetry_axis=None):
         self.data = abel.tools.symmetry.put_image_quadrants(Q=Q, \
                     original_image_shape = self.shape, \
@@ -125,9 +131,48 @@ class Tools:
     def to_polar(self, Jacobian=True, dr=1, dt=np.pi/180):
         self.polar_data, self.r_grid, self.theta_grid = abel.tools.polar.reproject_image_into_polar(self.data, origin=self.center, Jacobian=Jacobian, dr=dr, dt=dt)
 
-
-
-
+        
+        
+    def find_center(self, itr = 3, ywidth=300, xwidth = 300, width_decline = [0.5, 0.5], min_width = [20, 20], plot = True):  
+        ps = np.zeros([2, self.shape[0]])
+        for i in range(2):
+            s = np.sum(self.data, axis = i)
+            s = s/s.max()
+            ps[i] = s
+            
+        def gause_fit(axis, mid_point, width):
+            p0 = [1, mid_point, 10, 0.1]
+            p_range = np.arange(mid_point - width , mid_point + width)
+            p_data =  ps[axis][mid_point - width : mid_point + width]
+            #fitting
+            popt, _ = curve_fit(tools._gaussian, p_range, p_data, p0 = p0)
+            pc = popt[1]            # the point at which the value is max.
+            
+            if plot:
+                plt.plot(ps[axis], '-k', lw = 2)
+                plt.plot(p_range, tools._gaussian(p_range, *popt), '--', lw = 2)
+                plt.show()
+            
+            return pc 
+        
+        yc, xc = self.center
+        while itr and (xwidth > min_width[1] or ywidth > min_width[0]):  
+            xc = gause_fit(axis = 0, mid_point=int(xc), width=xwidth)
+            yc = gause_fit(axis = 1, mid_point=int(yc), width=ywidth)
+            
+            xwidth -= int(width_decline[1]*xwidth)
+            ywidth -= int(width_decline[0]*ywidth)
+            itr -= 1
+        return (yc, xc)
+    
+    
 class Image(Tools, Filter):
     
     pass
+
+
+
+
+
+class Images:
+    

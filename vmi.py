@@ -3,15 +3,15 @@ import numpy as np
 from core import Core
 from image import Image
 from present import Present
-from utilities import Utilities
+from utilities import Utility
 
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
-class VMI(Core, Image, Present, Utilities):
+class VMI(Core, Image, Present, Utility):
     
-    def __init__(self, data:np.array, radious:int = 921, center:list=[994, 1019], **kw):
+    def __init__(self, data:np.array, center:list = None, radious:int = 921, **kw):
         
         #The standerd data type is float32
         if data.dtype != np.float32:     
@@ -21,7 +21,16 @@ class VMI(Core, Image, Present, Utilities):
         
         self.shape = data.shape
         self.radious = radious
-        self.center  = center
+        
+        if not center:
+            self.center = [i//2 for i in self.shape]
+            try:
+                self.center = [int(round(i, 0)) for i in self.find_center(itr = 3, plot=False)]
+            except:
+               pass
+        else:
+            assert type(center) == list or type(center) == tuple
+            self.center  = center
     
         # Save copy for the raw data
         self.copies = {}
