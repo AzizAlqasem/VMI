@@ -133,7 +133,23 @@ class Tools:
 
         
         
-    def find_center(self, itr = 3, ywidth=300, xwidth = 300, width_decline = [0.5, 0.5], min_width = [20, 20], plot = True):  
+    def find_center(self, itr = 3, ywidth=300, xwidth = 300, width_decline = [0.5, 0.5], min_width = [20, 20], plot = True):
+        """
+        This function finds center by iterative gaussian fitting. 
+        The algorithm does the following:
+            1- Takes initional guessing - from the user - for the first gaussian fit. 
+            2- Uses the new fitting parameters as initial guessing for the second fit.
+            3- Reduces the fitting window around the center of the previous fit.
+            4- repeats 2 & 3 for <itr> times.
+        parametars:
+            itr: int  - number of iteration of fitting.
+            ywidth: int  - The initial fitting window for finding the center in the y-axis
+            xwidth: int  - The initial fitting window for finding the center in the x-axis
+            width_decline: list  - [y-axis, x-axis] the decline percentage of the fitting window.
+            min_width: list  - [y-axis, x-axis] The minimum width that the fitting window can reach. 
+            plot: bool  -  ploting the fitting
+        """
+       
         ps = np.zeros([2, self.shape[0]])
         for i in range(2):
             s = np.sum(self.data, axis = i)
