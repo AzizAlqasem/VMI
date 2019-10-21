@@ -3,9 +3,13 @@ VMI Core Analysis
 """
 import numpy as np
 import abel.tools, abel.transform    #PyAbel
+from scipy.signal import find_peaks
+import matplotlib.pyplot as plt
 
+#local
+#import mytools.data as mtd   # This is from outside VMI: 'C:\\Users\\aziz_\\OneDrive\\Aziz\\python\\my moduls\\mytools\\data.py'
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 class Core:
@@ -43,17 +47,50 @@ class Core:
    
       
         
-    def calibrate_energy(self):
+    def calibrate_energy(self, dE = 2 , prominence = [0.005,1], peaks_range =[400,600], plot = False) :
         """
-        This Function Takes the electron count data (After the Abel Transform) and return calibrated 
-        energy-axis using the seperation of rings in the abel transformed image, which we already know.
+        This Function Takes the electron count data and return calibrated energy-axis using 
+        the seperation between peaks.
         
         Parametrs:
-            electron_count: 2d_array 
-            
-        ...
-            
+            dE: int or flaot - The photon Energy (which is equivelent to the difference between two peaks).
+            prominence: list [min, max] - "https://docs.scipy.org/doc/scipy/reference/generated/scipy.signal.find_peaks.html"
+            peaks_range: [min, max] - 
+            plot: bool - for debugging   
+        
+        ____________
+        Note:
+            Conversion_const = dE / peaks_difference_average
+            Calibrated_energy_axis = conversion_const * range(line)**2    
+        """
+        
+        sample_line = self.lines[:,0]/self.lines[:,0].max()
+        self.energy_axis = np.arange(0, sample_line.size)**2
+        i,f = peaks_range
+        self.peaks, properties = find_peaks(sample_line[i:f], prominence = prominence)
+        self.peaks = self.peaks + i
+        energy_peaks = self.energy_axis[self.peaks]
+        peaks_diff = np.average(np.diff(energy_peaks))
+        conversion_const = dE / peaks_diff
+        self.energy_axis = conversion_const * self.energy_axis
+        
+        if plot:
+            plt.plot(self.energy_axis, sample_line)
+            plt.plot(self.energy_axis[self.peaks], sample_line[self.peaks], 'x')
+        
+
+
+class Data:
+    
+    
+    def normalize(data, n = 1):
+        """
+        normalize the data by dividing the data over maximum (n) values. If n > 1, all top values
+        are going to be averaged, then, the data is divided by that average.
         """
         pass
-    
-    
+        #top = mtd.top_values(arr = data, n = n)
+        #return data / (np.sum(top) / np.len(top))
+        
+
+            

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 
 
-__version__ = '0.1.0'
+__version__ = '0.1.1'
 
 
 # Setup figure defult values
@@ -19,14 +19,15 @@ class Present:
   
     def plot_electron_count_vs_energy(self, xi:int=None, xf:int=None, chose:list=None, yscale = 'log'):        
         chose = range(self.lines.shape[-1]) if chose == None else chose
-        velocity_axis = np.arange(0,len(self.lines))[xi:xf]
-        energy_axis = velocity_axis #** 2 / 2            # Not Calabrated yet
         
         plt.cla()
-        self.plots = plt.plot(energy_axis,self.lines[xi:xf, chose])
-        plt.xlabel('Energy (J)')
+        self.plots = plt.plot(self.energy_axis,self.lines[xi:xf, chose])
+        plt.xlabel('Energy (eV)')
         plt.ylabel('Counts (a.u.)')
         plt.legend(self.plots, list(np.arange(90,-1,-15)[chose])) # The zero angle at the y-axis
+        if yscale == 'log':
+            plt.yscale(yscale)
+            plt.ylim(1,None)
         
     
     def plot_sep_electron_count(self, dpi = 200, figsize = [8,6], yscale = 'log'):

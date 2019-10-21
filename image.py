@@ -165,14 +165,10 @@ class Tools:
             itr -= 1
         return (yc, xc)
     
-    
+ 
+
 class Image(Tools, Filter):
     
     pass
 
 
-
-
-
-class Images:
-    
